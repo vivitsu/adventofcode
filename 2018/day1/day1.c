@@ -5,7 +5,7 @@
 
 #define SZ 1000
 
-char * read_line(FILE * fp) {
+char *read_line(FILE * fp) {
 
     if (fp == NULL) {
         printf("Unable to open file.\n");
@@ -13,7 +13,7 @@ char * read_line(FILE * fp) {
     }
 
     int linelength = 128;
-    char * linebuffer = (char *) malloc(sizeof(char) * linelength);
+    char *linebuffer = (char *) malloc(sizeof(char) * linelength);
 
     int ch = fgetc(fp);
     int count = 0;
@@ -24,18 +24,18 @@ char * read_line(FILE * fp) {
     }
 
     linebuffer[count] = '\0';
-    char * line = (char *) malloc(sizeof(char) * (count + 1));
+    char *line = (char *) malloc(sizeof(char) * (count + 1));
     strncpy(line, linebuffer, count);
     free(linebuffer);    
     return line;
 }
 
 // Returns a slice of the input string starting from `begin` to `end - 1`
-const char * slice(const char * src, int begin, int end) {
+const char *slice(const char * src, int begin, int end) {
     assert(end > begin);
     int length = (end - begin) + 1; // Reserve space for nul character
     int i = 0;
-    char * out = (char *) malloc(sizeof(char) * length);    
+    char *out = (char *) malloc(sizeof(char) * length);
 
     for (int iter = begin; iter < end; iter++) {
         out[i] = src[iter];
@@ -47,7 +47,7 @@ const char * slice(const char * src, int begin, int end) {
 } 
 
 int main(int argc, char **argv) {
-    FILE * fp;
+    FILE *fp;
     fp = fopen("input.txt", "r");
 
     if (fp == NULL) {
@@ -62,9 +62,9 @@ int main(int argc, char **argv) {
     int size = SZ;
     int result = 0;
     int loop_iter = 0;    
-    int * freqs = (int *) malloc(sizeof(int) * size);    
-    char * line;
-    char * lines[1000];    
+    int *freqs = (int *) malloc(sizeof(int) * size);
+    char *line;
+    char *lines[1000];
     
     while(!feof(fp)) {
         line = read_line(fp);
@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
 
     while (!found) {
         for (int i = 0; i < num_lines; i++) {
-            char * curr_line = lines[i];            
+            char *curr_line = lines[i];
             freq_change = atoi(curr_line);
             result += freq_change;
             
