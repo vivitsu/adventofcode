@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <stdint.h>
 
 #define MAX_LINESZ 20
 
@@ -69,15 +71,57 @@ void read_lines(char* buf, char** lines)
                 k++;
             }
             line[k] = 0;
-            printf("Line: %s\n", line);
             curr_line_sz = i - start + 1;
-            // FIXME - Here be dragons!!!
-            memcpy_s(lines[curr_line], curr_line_sz, line, curr_line_sz);
-            printf("Current line: %s\n", lines[curr_line]);
+            lines[curr_line] = malloc(sizeof(char)*curr_line_sz);
+            strcpy_s(lines[curr_line], curr_line_sz, line);
             curr_line++;
             start = i + 1;
         }
     }
+}
+
+cuboid* get_cuboids(char** lines, int num_lines)
+{
+    uint32_t result = 0;
+    cuboid* cuboids = malloc(sizeof(cuboid)*num_lines);
+    for (int i = 0; i < num_lines; i++)
+    {
+        char* line = lines[i];
+        cuboid c;
+        sscanf(line, "%dx%dx%d", &c.length, &c.width, &c.height);
+        cuboids[i].length = c.length;
+        cuboids[i].width = c.width;
+        cuboids[i].height = c.height;
+    }
+    return cuboids;
+}
+
+uint32_t ribbon_needed(cuboid* cuboids, int num_lines)
+{
+    uint32_t result = 0;
+    for (int i = 0; i < num_lines; i++)
+    {
+        int perimeter1 = 2*cuboids[i].length + 2*cuboids[i].width;
+        int perimeter2 = 2*cuboids[i].width + 2*cuboids[i].height;
+        int perimeter3 = 2*cuboids[i].height + 2*cuboids[i].length;
+        int min_perimeter = min(min(perimeter1, perimeter2), perimeter3); 
+        result += min_perimeter + (cuboids[i].length*cuboids[i].width*cuboids[i].height);
+    }
+    return result;
+}
+
+uint32_t wrapping_paper_needed(cuboid* cuboids, int num_lines)
+{
+    uint32_t result = 0;
+    for (int i = 0; i < num_lines; i++)
+    {
+        int lw = cuboids[i].length * cuboids[i].width;
+        int wh = cuboids[i].width * cuboids[i].height;
+        int hl = cuboids[i].height * cuboids[i].length;
+        int min_side_area = min(min(lw, wh), hl);
+        result += 2*lw + 2*wh + 2*hl + min_side_area;
+    }
+    return result;
 }
 
 int main()
@@ -85,11 +129,18 @@ int main()
     char* buf = read_file("day2_input.txt");
     int num_lines = num_lines_in_file(buf);
     printf("Number of lines in file: %d\n", num_lines);
-    char** lines = (char**)malloc(sizeof(char)*num_lines*MAX_LINESZ);
+    char** lines = malloc(sizeof(char*)*num_lines);
     read_lines(buf, lines);
+    cuboid* cuboids = get_cuboids(lines, num_lines);
+    uint32_t wrapping_paper_sz = wrapping_paper_needed(cuboids, num_lines);
+    uint32_t ribbon_sz = ribbon_needed(cuboids, num_lines);
+    printf("Wrapping Paper Size: %d\n", wrapping_paper_sz);
+    printf("Ribbon Size: %d\n", ribbon_sz);
     for (int i = 0; i < num_lines; i++)
     {
-        printf("%d: %s\n", i+1, lines[i]);
+        free(lines[i]);
     }
+    free(lines);
+    free(cuboids);
     return 0;
 }

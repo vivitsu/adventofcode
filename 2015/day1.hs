@@ -15,5 +15,5 @@ count = foldr f 0
 
 main :: IO ()
 main = do
-    input <- readFile "input.txt"
+    input <- readFile "day1_input.txt"
     print . snd . head . drop' . reverse . count' $ input

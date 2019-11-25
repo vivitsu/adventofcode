@@ -34,6 +34,6 @@ printRibbon = print . sum . ribbon . ints . dims . lines
 
 main :: IO ()
 main = do
-    input <- readFile "input.txt"
+    input <- readFile "day2_input.txt"
     _ <- printWrappingPaper input
     printRibbon input
